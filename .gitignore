@@ -1,0 +1,15 @@
+/lib
+
+*Release*
+*Debug*
+/ipch*
+
+*.user
+*.log
+*.sdf
+*.suo
+*.aps
+*.opensdf
+*.dll
+*.db
+/*.opendb
