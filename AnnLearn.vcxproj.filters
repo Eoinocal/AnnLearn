@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ann_learn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{c5e039af-63d1-42de-8cfa-0a9da80de6e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\annlearn">
+      <UniqueIdentifier>{1fde6e9e-550a-451c-8a94-928d9c7ee039}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{2b6728fa-133d-40d1-9a45-dc9d1fe53788}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="annlearn\backprop_net.hpp">
+      <Filter>Header Files\annlearn</Filter>
+    </ClInclude>
+    <ClInclude Include="annlearn\layer.hpp">
+      <Filter>Header Files\annlearn</Filter>
+    </ClInclude>
+    <ClInclude Include="annlearn\neuron.hpp">
+      <Filter>Header Files\annlearn</Filter>
+    </ClInclude>
+    <ClInclude Include="annlearn\prod.hpp">
+      <Filter>Header Files\annlearn</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
