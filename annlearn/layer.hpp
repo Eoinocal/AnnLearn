@@ -6,36 +6,36 @@
 namespace annlearn
 {
 
-VEX_FUNCTION(float, sigmoid, (float, x),
+VEX_FUNCTION(float, sigmoid, (double, x),
 	return 1 / (1 + exp(-x));
 );
 
-VEX_FUNCTION(float, sigmoid_dx, (float, x),
+VEX_FUNCTION(float, sigmoid_dx, (double, x),
 	return x * (1 - x);
 );
 
-VEX_FUNCTION(float, hypertan, (float, x),
+VEX_FUNCTION(float, hypertan, (double, x),
 	return tanh(x);
 );
 
-VEX_FUNCTION(float, hypertan_dx, (float, x),
+VEX_FUNCTION(float, hypertan_dx, (double, x),
 	return (1 - x) * (1 + x);
 );
 
 
-VEX_FUNCTION(float, get_delta_x_activation, (size_t, n)(size_t, j)(float*, d)(float*, a),
+VEX_FUNCTION(float, get_delta_x_activation, (size_t, n)(size_t, j)(double*, d)(double*, a),
 	return d[j % n] * a[j / n];
 );
 
-VEX_FUNCTION(float, get_delta, (size_t, n)(size_t, j)(float*, d),
+VEX_FUNCTION(float, get_delta, (size_t, n)(size_t, j)(double*, d),
 	return d[j % n];
 );
 
-VEX_FUNCTION(float, get_activation, (size_t, n)(size_t, j)(float*, a),
+VEX_FUNCTION(float, get_activation, (size_t, n)(size_t, j)(double*, a),
 	return a[j / n];
 );
 
-VEX_FUNCTION(float, summed_delta, (size_t, n)(size_t, j)(float*, d)(float*, w),
+VEX_FUNCTION(float, summed_delta, (size_t, n)(size_t, j)(double*, d)(double*, w),
 
 	float sum = 0.0;
 

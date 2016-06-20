@@ -89,7 +89,9 @@
     <ClInclude Include="annlearn\backprop_net.hpp" />
     <ClInclude Include="annlearn\layer.hpp" />
     <ClInclude Include="annlearn\neuron.hpp" />
+    <ClInclude Include="annlearn\print.hpp" />
     <ClInclude Include="annlearn\prod.hpp" />
+    <ClInclude Include="annlearn\vex_matrix.hpp" />
     <ClInclude Include="stdafx.hpp" />
   </ItemGroup>
   <ItemGroup>

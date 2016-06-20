@@ -69,6 +69,8 @@ public:
 			layers_[i].update_weights(eta, layers_[i-1].activation);
 	}
 
+	size_t num_layers() const { return layers_.size(); }
+
 private:
 	std::vector<layer<T>> layers_;
 }; 

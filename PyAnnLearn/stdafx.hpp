@@ -1,6 +1,12 @@
 
 #pragma once
 
+
+#include <numeric>
+#include <random>
+
+#include <boost/optional.hpp>
+
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/detail/vector_assign.hpp>
 #include <boost/numeric/ublas/matrix_sparse.hpp>
@@ -30,6 +36,11 @@
 #	include <boost/numpy.hpp>
 #pragma warning (push)
 
-namespace bp = boost::python;
+namespace py = boost::python;
 namespace np = boost::numpy;
 
+inline const std::vector<vex::backend::command_queue>& context()
+{
+	static vex::Context ctx_(vex::Filter::GPU && vex::Filter::Position{1});
+	return ctx_;
+}

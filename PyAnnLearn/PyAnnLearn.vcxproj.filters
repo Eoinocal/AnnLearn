@@ -15,6 +15,12 @@
     <ClInclude Include="stdafx.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="classifier\back_prop.hpp">
+      <Filter>Header Files\classifier</Filter>
+    </ClInclude>
+    <ClInclude Include="convert.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

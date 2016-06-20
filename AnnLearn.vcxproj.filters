@@ -35,5 +35,11 @@
     <ClInclude Include="stdafx.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="annlearn\vex_matrix.hpp">
+      <Filter>Header Files\annlearn</Filter>
+    </ClInclude>
+    <ClInclude Include="annlearn\print.hpp">
+      <Filter>Header Files\annlearn</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,25 +4,11 @@
 #include "annlearn/neuron.hpp"
 #include "annlearn/layer.hpp"
 #include "annlearn/backprop_net.hpp"
+#include "annlearn/vex_matrix.hpp"
+#include "annlearn/print.hpp"
 
 namespace ann = annlearn;
 
-template<typename V>
-void print(V& vs)
-{
-	for (typename V::value_type v : vs)
-		std::cout << (boost::format("%8.5f ") % v);
-
-	std::cout << std::endl << std::endl;
-}
-
-template<typename T>
-void print(vex::vector<T>& vs)
-{
-	std::vector<T> us(vs.size());
-	vex::copy(vs.begin(), vs.end(), us.begin());
-	print(us);
-}
 
 int main()
 {
@@ -34,7 +20,7 @@ int main()
 	if (!ctx) throw std::runtime_error("No devices available.");
 	std::cout << ctx << std::endl;
 
-	vex::Random<float, vex::random::threefry> rnd;
+	vex::Random<double, vex::random::threefry> rnd;
 
 #if 0
 	size_t in = 1 << 10;
@@ -88,59 +74,69 @@ int main()
 
 	prof.tic_cl("initialise");
 
-	ann::backprop_net<float> net;
-	
+	ann::backprop_net<double> net;
+
 	net.reset(ctx, std::vector<size_t>{layer1, layer2, layer3});
 	net.random_initialise();
-	
+
 	prof.toc("initialise");
 
-	std::vector<float> ip{
+	vex::vector<double> v{ctx, std::vector<double>{1., 2., 3., 4., 5.}};
+
+	ann::matrix<double> input(ctx, layer1, 5, std::vector<double>{
 		0.f, 0.f, 0.f,
 		-0.2f, -0.2f, 1.f,
 		0.7f, 0.2f, 1.f,
 		-0.3f, -0.5f, 1.f,
-		-0.7f, 0.4f, 1.f};
+		-0.7f, 0.4f, 1.f});
 
-	vex::vector<float> iv{ctx, ip};
+	ann::print(input);
 
-	std::vector<float> tp{
+	vex::vector<double> ans = prod(v, input);
+
+	ann::print(ans);
+
+	ans = prod(v, input);
+
+	ann::print(ans);
+
+	vex::vector<double> u{ctx, std::vector<double>{1., 2., 3.}};
+
+	vex::vector<double> ans2 = prod(input, u);
+
+	ann::print(ans2);
+
+	ann::matrix<double> target(ctx, layer3, 5, std::vector<double>{
 		-0.2f, 0.6f,
 		-0.7f, -0.6f,
 		0.3f, -0.9f,
 		-0.1f, -0.2f,
-		0.4f, 0.2f};
-
-	vex::vector<float> tv{ctx, tp};
-
-	std::vector<size_t> indices(ip.size() / layer1);
+		0.4f, 0.2f});
+	
+	std::vector<size_t> indices(input.size() / layer1);
 	std::iota(indices.begin(), indices.end(), 0);
-
-	vex::slicer<2> is(vex::extents[ip.size() / layer1][layer1]);
-	vex::slicer<2> ts(vex::extents[tp.size() / layer3][layer3]);
 	
 	prof.tic_cl("train");
 
-	for (int i = 0; i < 4000; ++i)
+	for (int i = 0; i < 400; ++i)
 	{
 		std::shuffle(indices.begin(), indices.end(), std::mt19937{std::random_device{}()});
 
 		for (size_t j : indices)
 		{
-			net.forward_pass(is[j](iv));
-			net.backward_pass(0.05f, is[j](iv), ts[j](tv));
+			net.forward_pass(input.row(j));
+			net.backward_pass(0.05f, input.row(j), target.row(j));
 		}
 	}
 
 	prof.toc("train");
 	
 	for (size_t j : indices)
-		print(net.forward_pass(is[j](iv)));
+		ann::print(net.forward_pass(input.row(j)));
 
 #endif
 	std::cout << prof << std::endl;
 
 	system("pause");
 	return 0; 
-
 }

@@ -17,11 +17,11 @@ public:
 		ctx_(vex::Filter::GPU && vex::Filter::Position{0})
 	{}
 
-	void reset(np::ndarray x)
+	void reset(const py::object& a)
 	{
-		vex::vector<double> y{ctx_};
+		std::vector<size_t> l(to_std_vector<size_t>(a));
 
-	//	y.r
+		std::cout << l.size() << std::endl;
 	}
 
 private:
