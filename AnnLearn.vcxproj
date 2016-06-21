@@ -92,6 +92,7 @@
     <ClInclude Include="annlearn\print.hpp" />
     <ClInclude Include="annlearn\prod.hpp" />
     <ClInclude Include="annlearn\vex_matrix.hpp" />
+    <ClInclude Include="annlearn\vex_vector_io.hpp" />
     <ClInclude Include="stdafx.hpp" />
   </ItemGroup>
   <ItemGroup>

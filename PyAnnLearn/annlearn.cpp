@@ -59,6 +59,14 @@ void inspect(np::ndarray x)
 		std::cout << "Invalid dimension" << std::endl;
 }
 
+np::ndarray prod(np::ndarray n, np::ndarray m)
+{
+	annlearn::matrix<double> o = annlearn::prod(to_ann_matrix<double>(n), to_ann_matrix<double>(m));
+	annlearn::print(o);
+
+	return to_ndarray(o);
+}
+
 void inspect2(const py::object& iterable)
 {
 //	std::vector<size_t> a(annlearn::to_std_vector<size_t>(iterable));
@@ -82,10 +90,12 @@ BOOST_PYTHON_MODULE(MODULE_NAME)
 //	std::cout << *ctx_ << std::endl;
 
 	py::def("inspect", &inspect);
+	py::def("prod", &prod);
 
 	py::def("inspect2", &inspect2);
 
 	py::class_<annlearn::back_prop>("back_prop")
 		.def("reset", &annlearn::back_prop::reset)
-		.def("fit", &annlearn::back_prop::fit);
+		.def("fit", &annlearn::back_prop::fit)
+		.def("predict", &annlearn::back_prop::predict);
 }

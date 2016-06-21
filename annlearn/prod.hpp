@@ -96,4 +96,31 @@ auto prod(const annlearn::matrix<T>& m, const Expr& v)
 	return vex::tensordot(m.slice(), vec[vex::_](v), vex::axes_pairs(1, 0));
 }
 
+template<typename T>
+annlearn::matrix<T> prod(const annlearn::matrix<T>& m, const annlearn::matrix<T>& n)
+{
+	assert(m.ncol() == n.nrow());
+
+	return annlearn::matrix<T>(n.ncol(), m.nrow(), vex::tensordot(m.slice(), n.slice(), vex::axes_pairs(1, 0)));
+}
+
+template<typename ExprLeft, typename ExprRight>
+auto outer_product(const ExprLeft& v, const ExprRight& u)
+{
+	using vex::_;
+	typedef vex::traits::value_type<ExprLeft>::type T;
+
+	vex::detail::get_expression_properties v_prop;
+	vex::detail::extract_terminals()(v, v_prop);
+
+	vex::detail::get_expression_properties u_prop;
+	vex::detail::extract_terminals()(u, u_prop);
+
+	vex::slicer<2> matv(vex::extents[v_prop.size][1]);
+	vex::slicer<2> matu(vex::extents[1][u_prop.size]);
+
+	return annlearn::matrix<T>(u_prop.size, v_prop.size, vex::tensordot(matv[_](v), matu[_](u), vex::axes_pairs(1, 0)));
+}
+
+
 }

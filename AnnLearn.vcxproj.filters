@@ -41,5 +41,8 @@
     <ClInclude Include="annlearn\print.hpp">
       <Filter>Header Files\annlearn</Filter>
     </ClInclude>
+    <ClInclude Include="annlearn\vex_vector_io.hpp">
+      <Filter>Header Files\annlearn</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

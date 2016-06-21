@@ -71,6 +71,27 @@ public:
 
 	size_t num_layers() const { return layers_.size(); }
 
+	template<typename T>
+	matrix<T> predict(const matrix<T> input)
+	{
+		matrix<T> output{input.data.queue_list(), layers_.back().output_size(), input.nrow()};
+		
+		std::vector<size_t> indices(input.nrow());
+		std::iota(indices.begin(), indices.end(), 0);
+				
+		for (size_t j : indices)
+			output.row(j) = forward_pass(input.row(j));
+
+		return output;
+	}
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & make_nvp("layers", layers_);
+	}
+
 private:
 	std::vector<layer<T>> layers_;
 }; 

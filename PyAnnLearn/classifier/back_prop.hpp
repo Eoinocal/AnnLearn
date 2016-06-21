@@ -53,24 +53,19 @@ public:
 			}
 		}
 
-		std::cout << "out" << std::endl;
-		for (size_t j : indices)
-		{
-			annlearn::print(vex::vector<double>(net_.forward_pass(x_train.row(j))));
-		}
-		std::cout << "target" << std::endl;
-		for (size_t j : indices)
-		{
-			annlearn::print(vex::vector<double>(y_train.row(j)));
-		}
-		std::cout << "diff" << std::endl;
-		for (size_t j : indices)
-		{
-			annlearn::print(vex::vector<double>(net_.forward_pass(x_train.row(j)) - y_train.row(j)));
-		}
+	//	std::cout << "out" << std::endl;
+		//annlearn::print(net_.predict(x_train));
+
+	//	std::cout << "target" << std::endl;
+		//annlearn::print(y_train);
 
 		prof.toc("train");
 		std::cout << prof << std::endl;
+	}
+
+	np::ndarray predict(const np::ndarray& input)
+	{
+		return to_ndarray(net_.predict(to_ann_matrix<double>(input)));
 	}
 
 private:

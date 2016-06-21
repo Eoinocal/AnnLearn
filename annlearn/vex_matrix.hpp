@@ -18,8 +18,26 @@ struct matrix
 		assert(data.size() == col*row);
 	}
 
+	matrix(size_t col, size_t row, const vex::vector<T>& v) :
+		data{v},
+		col_{col},
+		row_{row},
+		slicer_{vex::extents[row_][col_]}
+	{
+		assert(data.size() == col*row);
+	}
+
 	matrix(const std::vector<vex::backend::command_queue>& queue, size_t col, size_t row, std::vector<T>& v) :
 		data{queue, v},
+		col_{col},
+		row_{row},
+		slicer_{vex::extents[row_][col_]}
+	{
+		assert(data.size() == col*row);
+	}
+
+	matrix(const std::vector<vex::backend::command_queue>& queue, size_t col, size_t row) :
+		data(queue, col*row),
 		col_{col},
 		row_{row},
 		slicer_{vex::extents[row_][col_]}
@@ -31,17 +49,32 @@ struct matrix
 
 	vex::vector<T> data;
 
-	auto column(size_t i) const
+	const auto column(size_t i) const
 	{
 		return slicer_[vex::_][i](data);
 	}
 
-	auto row(size_t i) const
+	auto column(size_t i)
+	{
+		return slicer_[vex::_][i](data);
+	}
+
+	const auto row(size_t i) const
 	{
 		return slicer_[i](data);
 	}
 
-	auto slice(const vex::range &row = vex::_, const vex::range &col = vex::_) const
+	auto row(size_t i)
+	{
+		return slicer_[i](data);
+	}
+
+	const auto slice(const vex::range &row = vex::_, const vex::range &col = vex::_) const
+	{
+		return slicer_[row][col](data);
+	}
+
+	auto slice(const vex::range &row = vex::_, const vex::range &col = vex::_)
 	{
 		return slicer_[row][col](data);
 	}

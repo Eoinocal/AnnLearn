@@ -49,11 +49,16 @@ template<typename T>
 class layer
 {
 public:
+	layer()
+	{}
+
 	layer(const std::vector<vex::backend::command_queue> &queue, size_t layer_size, size_t previous_layer) :
 		weights{queue, layer_size*previous_layer},
 		bias_weights{queue, layer_size},
 		activation(queue, layer_size),
-		activation_stale_{true}
+		activation_stale_{true},
+		input_size_{previous_layer},
+		output_size_{layer_size}
 	{
 		deltas.resize(activation.size());
 	}
@@ -123,6 +128,21 @@ public:
 	}
 
 	size_t layer_size() const { return activation.size(); }
+	size_t input_size() const { return input_size_; }
+	size_t output_size() const { return output_size_; }
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & make_nvp("weights", weights);
+		ar & make_nvp("bias_weights", bias_weights);
+		ar & make_nvp("activation", activation);
+		ar & make_nvp("deltas", deltas);
+		ar & make_nvp("activation_stale", activation_stale_);
+		ar & make_nvp("input_size", input_size_);
+		ar & make_nvp("output_size", output_size_);
+	}
 
 	vex::vector<T> weights;
 	vex::vector<T> bias_weights;
@@ -131,6 +151,8 @@ public:
 
 private:
 	bool activation_stale_;
+	size_t input_size_;
+	size_t output_size_;
 };
 
 }

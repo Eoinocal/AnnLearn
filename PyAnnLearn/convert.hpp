@@ -60,3 +60,17 @@ annlearn::matrix<T> to_ann_matrix(const np::ndarray& a_t)
 		throw std::runtime_error("Unsupport ndarray dimension > 2");
 }
 
+template<typename T>
+inline
+np::ndarray to_ndarray(const annlearn::matrix<T>& m)
+{
+	std::vector<double> o(m.data.size());
+	vex::copy(m.data.begin(), m.data.end(), o.begin());
+
+	Py_intptr_t shape[2] = {(Py_intptr_t)m.nrow(), (Py_intptr_t)m.ncol()};
+	np::ndarray result = np::zeros(2, shape, np::dtype::get_builtin<double>());
+	std::copy(o.begin(), o.end(), reinterpret_cast<double*>(result.get_data()));
+
+	return result;
+}
+

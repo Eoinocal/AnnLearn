@@ -6,13 +6,14 @@
 #include "annlearn/backprop_net.hpp"
 #include "annlearn/vex_matrix.hpp"
 #include "annlearn/print.hpp"
+#include "annlearn/vex_vector_io.hpp"
 
 namespace ann = annlearn;
 
 
 int main()
 {
-	vex::Context ctx(vex::Filter::GPU && vex::Filter::Position{1});
+	vex::Context ctx(vex::Filter::GPU && vex::Filter::Position{0});
 	vex::profiler<> prof(ctx);
 
 	using vex::_;
@@ -68,6 +69,8 @@ int main()
 
 	prof.toc("train");
 #else
+
+
 	size_t layer1 = 3; // 1 << 8;
 	size_t layer2 = 5; // 1 << 10;
 	size_t layer3 = 2; // 1 << 6;
@@ -81,8 +84,20 @@ int main()
 
 	prof.toc("initialise");
 
-	vex::vector<double> v{ctx, std::vector<double>{1., 2., 3., 4., 5.}};
+	vex::vector<double> vv{ctx, std::vector<double>{1., 2., 3., 4., 5.}};
 
+	{	std::ofstream ofs("vex_vec.txt");
+		boost::archive::text_oarchive oa(ofs);
+		oa << vv;
+	}
+
+	vex::vector<double> v;
+
+	{	std::ifstream ifs("vex_vec.txt");
+		boost::archive::text_iarchive ia(ifs);
+		ia >> v;
+	}
+	
 	ann::matrix<double> input(ctx, layer1, 5, std::vector<double>{
 		0.f, 0.f, 0.f,
 		-0.2f, -0.2f, 1.f,
@@ -96,15 +111,28 @@ int main()
 
 	ann::print(ans);
 
-	ans = prod(v, input);
+	ann::matrix<double> V(5, 1, v);
 
-	ann::print(ans);
+	ann::matrix<double> ans3 = prod(V, input);
+	ann::print(ans3);
+
 
 	vex::vector<double> u{ctx, std::vector<double>{1., 2., 3.}};
 
 	vex::vector<double> ans2 = prod(input, u);
-
 	ann::print(ans2);
+
+	ann::matrix<double> U(1, 3, u);
+
+	ann::matrix<double> ans4 = prod(input, U);
+	ann::print(ans4);
+
+	ann::matrix<double> ans5 = prod(U, V);
+	ann::print(ans5);
+
+	ann::matrix<double> ans6 = ann::outer_product(u, v);
+	ann::print(ans6);
+
 
 	ann::matrix<double> target(ctx, layer3, 5, std::vector<double>{
 		-0.2f, 0.6f,
@@ -115,10 +143,15 @@ int main()
 	
 	std::vector<size_t> indices(input.size() / layer1);
 	std::iota(indices.begin(), indices.end(), 0);
+
+	ann::matrix<double> empty(ctx, 3, 5);
+	empty.row(2) = u;
+	empty.column(1) = v;
+	ann::print(empty);
 	
 	prof.tic_cl("train");
 
-	for (int i = 0; i < 400; ++i)
+	for (int i = 0; i < 4000; ++i)
 	{
 		std::shuffle(indices.begin(), indices.end(), std::mt19937{std::random_device{}()});
 
@@ -130,9 +163,23 @@ int main()
 	}
 
 	prof.toc("train");
-	
-	for (size_t j : indices)
-		ann::print(net.forward_pass(input.row(j)));
+
+	ann::print(net.predict(input));
+
+
+	{	std::ofstream ofs("net.txt");
+		boost::archive::xml_oarchive oa(ofs);
+		oa << ann::make_nvp("net", net);
+	}
+
+	ann::backprop_net<double> net_loaded;
+
+	{	std::ifstream ifs("net.txt");
+		boost::archive::xml_iarchive ia(ifs);
+		ia >> ann::make_nvp("net", net_loaded);
+	}
+
+	ann::print(net_loaded.predict(input));
 
 #endif
 	std::cout << prof << std::endl;
