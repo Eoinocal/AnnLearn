@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vex_matrix.hpp"
 
 namespace annlearn {
 
