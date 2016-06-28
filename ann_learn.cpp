@@ -11,9 +11,19 @@
 namespace ann = annlearn;
 
 
+template<typename Expr>
+inline
+double l2_norm(const Expr& v)
+{
+	typedef vex::traits::value_type<Expr>::type T;
+	vex::Reductor<double, vex::SUM> sum(vex::current_context());
+
+	return round(sum(v*v));
+}
+
 int main()
 {
-	vex::Context ctx(vex::Filter::GPU && vex::Filter::Position{0});
+	vex::Context ctx(vex::Filter::GPU && vex::Filter::Position{1});
 	vex::profiler<> prof(ctx);
 
 	using vex::_;
@@ -23,7 +33,39 @@ int main()
 
 	vex::Random<double, vex::random::threefry> rnd;
 
-#if 0
+#if 1
+
+	ann::matrix<double> x_train;
+	ann::matrix<double> y_train;
+
+	{	std::ifstream ifs("iris.txt");
+		boost::archive::xml_iarchive ia(ifs);
+		ia >> ann::make_nvp("x_train", x_train);
+		ia >> ann::make_nvp("y_train", y_train);
+	}
+
+	std::cout << "Inputs" << std::endl;
+
+//	ann::print(x_train);
+//	ann::print(y_train);
+
+	ann::backprop_net<double> net{ctx, {x_train.ncol(), 1000, y_train.ncol()}};
+	net.random_initialise();
+
+	std::cout << "Pre training prediction error: " << l2_norm(net.predict(x_train).data - y_train.data) << std::endl;
+
+//	ann::print(net.predict(x_train));
+//	std::cout << "Error: " << l2_norm(net.predict(x_train).data - y_train.data) << std::endl;
+
+	net.fit(x_train, y_train, 0.1, 2000);
+
+	vex::vector<double> predictions = vex::round(net.predict(x_train).data);
+	ann::print(predictions);
+	std::cout << "Post training prediction error: " << l2_norm(predictions - y_train.data) << std::endl;
+
+//	std::cout << "Error: " << l2_norm(predictions.data - y_train.data) << std::endl;
+
+#elif 0
 	size_t in = 1 << 10;
 	size_t out = 1 << 12;
 
@@ -68,7 +110,7 @@ int main()
 	}
 
 	prof.toc("train");
-#else
+#elif 0
 
 
 	size_t layer1 = 3; // 1 << 8;
@@ -104,6 +146,8 @@ int main()
 		0.7f, 0.2f, 1.f,
 		-0.3f, -0.5f, 1.f,
 		-0.7f, 0.4f, 1.f});
+
+	ann::print(net.predict(input));
 
 	ann::print(input);
 
@@ -165,7 +209,6 @@ int main()
 	prof.toc("train");
 
 	ann::print(net.predict(input));
-
 
 	{	std::ofstream ofs("net.txt");
 		boost::archive::xml_oarchive oa(ofs);

@@ -5,6 +5,14 @@
 #include <numeric>
 #include <random>
 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
+
+#include <boost/progress.hpp>
+
 #include <boost/optional.hpp>
 
 #include <boost/numeric/ublas/vector.hpp>

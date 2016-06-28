@@ -66,9 +66,10 @@ public:
 	void random_initialise()
 	{
 		vex::Random<float, vex::random::threefry> rnd;
-		weights = 2 * rnd(vex::element_index(), std::rand()) - 1;
-		activation = 2 * rnd(vex::element_index(), std::rand()) - 1;
-		deltas.resize(activation.size());
+		weights = (2 * rnd(vex::element_index(), std::rand()) - 1) * 0.1;
+		bias_weights = (2 * rnd(vex::element_index(), std::rand()) - 1) * 0.1;
+	//	activation = 2 * rnd(vex::element_index(), std::rand()) - 1;
+	//	deltas.resize(activation.size());
 	}
 	
 	void set_weights(const std::vector<T>& v, const std::vector<T>& b)
@@ -90,13 +91,12 @@ public:
 		bias_weights.resize(slice[y][vex::_](v));
 	}
 
-	template<typename E>
-	const auto& activate(const E& input)
+	void activate(const vex::vector<T>& input)
 	{
 		activation_stale_ = false;
 
 		auto net = vec_mat_prod(input, weights) + bias_weights;
-		return activation = hypertan(net);
+		activation = hypertan(net);
 	}
 
 	template<typename TT>

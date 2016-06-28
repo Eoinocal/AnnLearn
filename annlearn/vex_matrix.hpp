@@ -9,6 +9,10 @@ namespace annlearn
 template<typename T>
 struct matrix
 {
+	matrix() : 
+		slicer_{vex::extents[1][1]} 
+	{}
+
 	matrix(size_t col, size_t row, vex::vector<T>&& v) :
 		data{std::move(v)},
 		col_{col},
@@ -29,6 +33,15 @@ struct matrix
 
 	matrix(const std::vector<vex::backend::command_queue>& queue, size_t col, size_t row, std::vector<T>& v) :
 		data{queue, v},
+		col_{col},
+		row_{row},
+		slicer_{vex::extents[row_][col_]}
+	{
+		assert(data.size() == col*row);
+	}
+
+	matrix(size_t col, size_t row, std::vector<T>& v) :
+		data{v},
 		col_{col},
 		row_{row},
 		slicer_{vex::extents[row_][col_]}
@@ -82,6 +95,17 @@ struct matrix
 	size_t ncol() const { return col_; }
 	size_t nrow() const { return row_; }
 	size_t size() const { return col_ * row_; }
+
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & make_nvp("data", data);
+		ar & make_nvp("col", col_);
+		ar & make_nvp("row", row_);
+
+		slicer_ = vex::extents[row_][col_];
+	}
 
 private:
 	size_t col_;

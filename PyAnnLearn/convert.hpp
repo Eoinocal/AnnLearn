@@ -4,6 +4,9 @@
 #include "stdafx.hpp"
 #include <annlearn/vex_matrix.hpp>
 
+#include <numpy/ndarraytypes.h>
+#include <numpy/__multiarray_api.h>
+
 template<typename T>
 inline
 std::vector<T> to_std_vector(const py::object& iterable)
@@ -19,10 +22,8 @@ vex::vector<T> to_vex_vector(const np::ndarray& a)
 
 	const Py_intptr_t* dim = a.get_shape();
 
-	std::cout << a.get_nd() << " -> " << dim[0] << std::endl;
-
+//	std::cout << a.get_nd() << " -> " << dim[0] << std::endl;
 //	auto total = static_cast<size_t>(std::accumulate(&dim[0], &dim[a.get_nd()], (Py_intptr_t)1, std::multiplies<Py_intptr_t>()));
-
 //	std::cout << total << std::endl;
 
 	return vex::vector<T>{context(), static_cast<size_t>(a.get_shape()[0]), reinterpret_cast<T*>(a.get_data())};
@@ -30,34 +31,58 @@ vex::vector<T> to_vex_vector(const np::ndarray& a)
 
 template<typename T>
 inline
-annlearn::matrix<T> to_ann_matrix(const np::ndarray& a_t)
+const np::ndarray* correct_array(const np::ndarray& in, np::ndarray& out)
 {
+//	std::cout << "Correcting: with flags: " << in.get_flags() << std::endl;
+	auto type = in.get_dtype();
+	const np::ndarray* current = &in;
 
-	if (a_t.get_nd() == 1)
+	if (np::dtype::get_builtin<T>() != type)
 	{
-		const Py_intptr_t* dim = a_t.get_shape();
-
-		std::cout << a_t.get_nd() << " -> " << dim[0] << std::endl;
-
-		return annlearn::matrix<T>{1, static_cast<size_t>(dim[0]), vex::vector<T>{context(), static_cast<size_t>(dim[0]), reinterpret_cast<T*>(a_t.get_data())}};
+//		std::cout << " >> converting type\n";
+		out = current->astype(np::dtype::get_builtin<T>());
+		current = &out;
 	}
-	else if (a_t.get_nd() == 2) 
+
+	if (!(in.get_flags() & np::ndarray::bitflag::C_CONTIGUOUS))
 	{
-		auto a = a_t.transpose();
-		const Py_intptr_t* dim = a.get_shape();
+//		std::cout << " >> re-ordering\n";
+		out = np::ndarray(boost::python::detail::new_reference(PyObject_CallMethod(current->ptr(), const_cast<char*>("copy"), "(i)", NPY_CORDER)));
+		current = &out;
+	}
 
-		std::cout << a.get_nd() << " -> ";
-		for (int d = 0; d < a.get_nd(); ++d)
+	return current;
+}
+
+template<typename T>
+inline
+annlearn::matrix<T> to_ann_matrix(const np::ndarray& m)
+{
+	Py_intptr_t shape[1] = {(Py_intptr_t)1};
+	np::ndarray possibly_converted = np::empty(1, shape, np::dtype::get_builtin<T>());
+	const np::ndarray* active = correct_array<T>(m, possibly_converted);
+
+	if (active->get_nd() == 1)
+	{
+		const Py_intptr_t* dim = active->get_shape();
+//		std::cout << active->get_nd() << " -> " << dim[0] << std::endl;
+
+		return annlearn::matrix<T>{1, static_cast<size_t>(dim[0]), vex::vector<T>{context(), static_cast<size_t>(dim[0]), reinterpret_cast<T*>(active->get_data())}};
+	}
+	else if (active->get_nd() == 2) 
+	{
+		const Py_intptr_t* dim = active->get_shape();
+/*		std::cout << m.get_nd() << " -> ";
+		for (int d = 0; d < active->get_nd(); ++d)
 			std::cout << dim[d] << " ";
+*/
+		auto total = static_cast<size_t>(std::accumulate(&dim[0], &dim[active->get_nd()], (Py_intptr_t)1, std::multiplies<Py_intptr_t>()));
+//		std::cout << "= " << total << std::endl;
 
-		auto total = static_cast<size_t>(std::accumulate(&dim[0], &dim[a.get_nd()], (Py_intptr_t)1, std::multiplies<Py_intptr_t>()));
-
-		std::cout << "= " << total << std::endl;
-
-		return annlearn::matrix<T>{static_cast<size_t>(dim[0]), static_cast<size_t>(dim[1]), vex::vector<T>{context(), total, reinterpret_cast<T*>(a.get_data())}};
+		return annlearn::matrix<T>{static_cast<size_t>(dim[1]), static_cast<size_t>(dim[0]), vex::vector<T>{context(), total, reinterpret_cast<T*>(active->get_data())}};
 	}
 	else
-		throw std::runtime_error("Unsupport ndarray dimension > 2");
+		throw std::runtime_error("Unsupported ndarray dimension > 2");
 }
 
 template<typename T>
@@ -73,4 +98,3 @@ np::ndarray to_ndarray(const annlearn::matrix<T>& m)
 
 	return result;
 }
-

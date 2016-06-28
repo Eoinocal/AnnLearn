@@ -44,15 +44,14 @@ public:
 		layers_[layer].set_weights(weights);
 	}
 
-	template<typename E>
-	const auto& forward_pass(const E& in)
+	const vex::vector<T>& forward_pass(const vex::vector<T>& in)
 	{
 		layers_.front().activate(in);
 
 		for (size_t i = 1; i < layers_.size(); ++i)
 			layers_[i].activate(layers_[0].activation);
 
-		return layers_.back().activation;;
+		return layers_.back().activation;
 	}
 
 	template<typename EI, typename ET>
@@ -72,7 +71,29 @@ public:
 	size_t num_layers() const { return layers_.size(); }
 
 	template<typename T>
-	matrix<T> predict(const matrix<T> input)
+	void fit(const matrix<T>& x_train, const matrix<T>& y_train, T eta = 0.05f,  int epochs = 1000)
+	{
+		std::vector<size_t> indices(x_train.nrow());
+		std::iota(indices.begin(), indices.end(), 0);
+
+		boost::progress_display show_progress(epochs);
+		
+		for (int i = 0; i < epochs; ++i)
+		{
+			std::shuffle(indices.begin(), indices.end(), std::mt19937{std::random_device{}()});
+
+			for (size_t j : indices)
+			{
+				forward_pass(x_train.row(j));
+				backward_pass(eta, x_train.row(j), y_train.row(j));
+			}
+
+			++show_progress;
+		}
+	}
+
+	template<typename T>
+	matrix<T> predict(const matrix<T>& input)
 	{
 		matrix<T> output{input.data.queue_list(), layers_.back().output_size(), input.nrow()};
 		
