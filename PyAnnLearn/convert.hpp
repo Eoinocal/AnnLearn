@@ -89,7 +89,7 @@ template<typename T>
 inline
 np::ndarray to_ndarray(const annlearn::matrix<T>& m)
 {
-	std::vector<double> o(m.data.size());
+	std::vector<double> o(m.size());
 	vex::copy(m.data.begin(), m.data.end(), o.begin());
 
 	Py_intptr_t shape[2] = {(Py_intptr_t)m.nrow(), (Py_intptr_t)m.ncol()};

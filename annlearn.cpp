@@ -4,6 +4,7 @@
 #include "annlearn/neuron.hpp"
 #include "annlearn/layer.hpp"
 #include "annlearn/backprop_net.hpp"
+#include "annlearn/svm.hpp"
 #include "annlearn/vex_matrix.hpp"
 #include "annlearn/print.hpp"
 #include "annlearn/vex_vector_io.hpp"
@@ -34,6 +35,11 @@ int main()
 	vex::Random<double, vex::random::threefry> rnd;
 
 #if 1
+	auto X{ann::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
+	auto y{ann::load_matrix<double>(std::ifstream{"blobs_y.xml"})};
+	auto y_hot{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
+
+#elif 0
 
 	ann::matrix<double> x_train;
 	ann::matrix<double> y_train;

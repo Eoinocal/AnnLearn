@@ -113,5 +113,14 @@ private:
 	vex::slicer<2> slicer_;
 };
 
+template<typename T>
+matrix<T> load_matrix(std::istream& is)
+{
+	matrix<T> m;
+	boost::archive::xml_iarchive ia(is);
+	ia >> make_nvp("m", m);
+
+	return m;
+}
 
 }

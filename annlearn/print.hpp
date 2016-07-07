@@ -24,7 +24,7 @@ void print(vex::vector<T>& vs)
 template<typename T>
 void print(const matrix<T>& vs)
 {
-	std::vector<T> us(vs.data.size());
+	std::vector<T> us(vs.size());
 	vex::copy(vs.data.begin(), vs.data.end(), us.begin());
 
 	for (int r = 0; r < vs.nrow(); ++r)
