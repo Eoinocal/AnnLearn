@@ -47,8 +47,4 @@
 namespace py = boost::python;
 namespace np = boost::numpy;
 
-inline const std::vector<vex::backend::command_queue>& context()
-{
-	static vex::Context ctx_(vex::Filter::GPU && vex::Filter::Position{1});
-	return ctx_;
-}
+//const std::vector<vex::backend::command_queue>& context();

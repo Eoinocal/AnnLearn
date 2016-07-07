@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="annlearn.cpp">
+    <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="py_annlearn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -15,11 +15,11 @@
     <ClInclude Include="stdafx.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="classifier\back_prop.hpp">
-      <Filter>Header Files\classifier</Filter>
-    </ClInclude>
     <ClInclude Include="convert.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classifier\backprop_net.hpp">
+      <Filter>Header Files\classifier</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

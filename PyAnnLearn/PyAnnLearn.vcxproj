@@ -92,14 +92,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="annlearn.cpp" />
+    <ClCompile Include="py_annlearn.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classifier\back_prop.hpp" />
+    <ClInclude Include="classifier\backprop_net.hpp" />
     <ClInclude Include="classifier\base.hpp" />
     <ClInclude Include="convert.hpp" />
     <ClInclude Include="stdafx.hpp" />

@@ -23,7 +23,7 @@ double l2_norm(const Expr& v)
 
 int main()
 {
-	vex::Context ctx(vex::Filter::GPU && vex::Filter::Position{1});
+	vex::Context ctx(vex::Filter::CPU && vex::Filter::Position{0});
 	vex::profiler<> prof(ctx);
 
 	using vex::_;
@@ -47,9 +47,9 @@ int main()
 	std::cout << "Inputs" << std::endl;
 
 //	ann::print(x_train);
-//	ann::print(y_train);
+	ann::print(y_train);
 
-	ann::backprop_net<double> net{ctx, {x_train.ncol(), 1000, y_train.ncol()}};
+	ann::backprop_net<double> net{ctx, {x_train.ncol(), 200, y_train.ncol()}};
 	net.random_initialise();
 
 	std::cout << "Pre training prediction error: " << l2_norm(net.predict(x_train).data - y_train.data) << std::endl;
@@ -60,7 +60,7 @@ int main()
 	net.fit(x_train, y_train, 0.1, 2000);
 
 	vex::vector<double> predictions = vex::round(net.predict(x_train).data);
-	ann::print(predictions);
+//	ann::print(predictions);
 	std::cout << "Post training prediction error: " << l2_norm(predictions - y_train.data) << std::endl;
 
 //	std::cout << "Error: " << l2_norm(predictions.data - y_train.data) << std::endl;

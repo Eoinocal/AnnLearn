@@ -67,7 +67,7 @@ annlearn::matrix<T> to_ann_matrix(const np::ndarray& m)
 		const Py_intptr_t* dim = active->get_shape();
 //		std::cout << active->get_nd() << " -> " << dim[0] << std::endl;
 
-		return annlearn::matrix<T>{1, static_cast<size_t>(dim[0]), vex::vector<T>{context(), static_cast<size_t>(dim[0]), reinterpret_cast<T*>(active->get_data())}};
+		return annlearn::matrix<T>{1, static_cast<size_t>(dim[0]), vex::vector<T>{static_cast<size_t>(dim[0]), reinterpret_cast<T*>(active->get_data())}};
 	}
 	else if (active->get_nd() == 2) 
 	{
@@ -79,7 +79,7 @@ annlearn::matrix<T> to_ann_matrix(const np::ndarray& m)
 		auto total = static_cast<size_t>(std::accumulate(&dim[0], &dim[active->get_nd()], (Py_intptr_t)1, std::multiplies<Py_intptr_t>()));
 //		std::cout << "= " << total << std::endl;
 
-		return annlearn::matrix<T>{static_cast<size_t>(dim[1]), static_cast<size_t>(dim[0]), vex::vector<T>{context(), total, reinterpret_cast<T*>(active->get_data())}};
+		return annlearn::matrix<T>{static_cast<size_t>(dim[1]), static_cast<size_t>(dim[0]), vex::vector<T>{total, reinterpret_cast<T*>(active->get_data())}};
 	}
 	else
 		throw std::runtime_error("Unsupported ndarray dimension > 2");
@@ -97,4 +97,29 @@ np::ndarray to_ndarray(const annlearn::matrix<T>& m)
 	std::copy(o.begin(), o.end(), reinterpret_cast<double*>(result.get_data()));
 
 	return result;
+}
+template<typename T>
+inline
+void save_nd_matrix(const np::ndarray& nd_m, const std::string& filename)
+{
+	ann::matrix<T> m{to_ann_matrix<T>(nd_m)};
+
+	{	std::ofstream ofs(filename);
+		boost::archive::xml_oarchive oa(ofs);
+		oa << ann::make_nvp("m", m);
+	}
+}
+
+template<typename T>
+inline
+np::ndarray load_nd_matrix(const std::string& filename)
+{
+	ann::matrix<T> m;
+	
+	{	std::ifstream ifs(filename);
+		boost::archive::xml_iarchive ia(ifs);
+		ia >> ann::make_nvp("m", m);
+	}
+
+	return to_ndarray(m);
 }

@@ -99,9 +99,15 @@ public:
 		
 		std::vector<size_t> indices(input.nrow());
 		std::iota(indices.begin(), indices.end(), 0);
+		
+		boost::progress_display show_progress(static_cast<unsigned long>(indices.size()));
 				
 		for (size_t j : indices)
+		{
 			output.row(j) = forward_pass(input.row(j));
+
+			++show_progress;
+		}
 
 		return output;
 	}

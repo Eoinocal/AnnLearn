@@ -19,7 +19,15 @@ VEX_FUNCTION(float, hypertan, (double, x),
 );
 
 VEX_FUNCTION(float, hypertan_dx, (double, x),
-	return (1 - x) * (1 + x);
+	return max(-0.5, min(0.5, (1.0 - x) * (1.0 + x)));
+);
+
+VEX_FUNCTION(float, max_fn, (double, x),
+	return max(0.0, x);
+);
+
+VEX_FUNCTION(float, max_dx, (double, x),
+	return x < 0.0 ? 0.1 : 1.0;
 );
 
 
@@ -65,11 +73,11 @@ public:
 
 	void random_initialise()
 	{
-		vex::Random<float, vex::random::threefry> rnd;
-		weights = (2 * rnd(vex::element_index(), std::rand()) - 1) * 0.1;
-		bias_weights = (2 * rnd(vex::element_index(), std::rand()) - 1) * 0.1;
-	//	activation = 2 * rnd(vex::element_index(), std::rand()) - 1;
-	//	deltas.resize(activation.size());
+		T scale = 0.1f;
+
+		vex::RandomNormal<T, vex::random::threefry> rnd;
+		weights = rnd(vex::element_index(), std::rand()) * scale;
+		bias_weights = (2 * rnd(vex::element_index(), std::rand()) - 1) * scale;
 	}
 	
 	void set_weights(const std::vector<T>& v, const std::vector<T>& b)
@@ -96,7 +104,7 @@ public:
 		activation_stale_ = false;
 
 		auto net = vec_mat_prod(input, weights) + bias_weights;
-		activation = hypertan(net);
+		activation = max_fn(net);
 	}
 
 	template<typename TT>
@@ -104,7 +112,7 @@ public:
 	{
 		assert(!activation_stale_);
 
-		return deltas = (activation - target) * hypertan_dx(activation);
+		return deltas = (activation - target) * max_dx(activation);
 	}
 
 	const auto& compute_deltas(layer<T>& above)
@@ -112,17 +120,19 @@ public:
 		assert(!activation_stale_);
 
 		return deltas = summed_delta(above.deltas.size(), vex::element_index(), vex::raw_pointer(above.deltas), vex::raw_pointer(above.weights))
-			* hypertan_dx(activation);
+			* max_dx(activation);
 	}
 	
 	void update_weights(T eta, const vex::vector<T>& input)
 	{
-		weights -= eta
+		T lambda = 0.0f;
+
+		weights -= weights*lambda + eta
 			* get_delta_x_activation(deltas.size(), vex::element_index(), vex::raw_pointer(deltas), vex::raw_pointer(input));
 //			* get_activation(deltas.size(), vex::element_index(), vex::raw_pointer(input)) // NOT a bug that delta's size is used
 //			  get_delta(deltas.size(), vex::element_index(), vex::raw_pointer(deltas));
 
-		bias_weights -= eta * get_delta(deltas.size(), vex::element_index(), vex::raw_pointer(deltas));
+		bias_weights -= bias_weights*lambda + eta * get_delta(deltas.size(), vex::element_index(), vex::raw_pointer(deltas));
 
 		activation_stale_ = true;
 	}

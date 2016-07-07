@@ -9,8 +9,8 @@ namespace annlearn
 template<typename T>
 struct matrix
 {
-	matrix() : 
-		slicer_{vex::extents[1][1]} 
+	matrix() :
+		slicer_{vex::extents[1][1]}
 	{}
 
 	matrix(size_t col, size_t row, vex::vector<T>&& v) :
