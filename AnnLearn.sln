@@ -1,12 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnnLearn", "AnnLearn.vcxproj", "{55FDA816-FF60-4D81-B5A0-335DE1B246F2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A70B5163-18EB-4F3E-9D33-F1D72704346C} = {A70B5163-18EB-4F3E-9D33-F1D72704346C}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PyAnnLearn", "PyAnnLearn\PyAnnLearn.vcxproj", "{A70B5163-18EB-4F3E-9D33-F1D72704346C}"
 EndProject

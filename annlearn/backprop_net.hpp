@@ -70,7 +70,6 @@ public:
 
 	size_t num_layers() const { return layers_.size(); }
 
-	template<typename T>
 	void fit(const matrix<T>& x_train, const matrix<T>& y_train, T eta = 0.05f,  int epochs = 1000)
 	{
 		std::vector<size_t> indices(x_train.nrow());

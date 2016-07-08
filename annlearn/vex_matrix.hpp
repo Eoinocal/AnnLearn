@@ -92,6 +92,15 @@ struct matrix
 		return slicer_[row][col](data);
 	}
 
+	void resize(size_t col, size_t row)
+	{
+		col_ = col;
+		row_ = row;
+
+		data.resize(size());
+		slicer_ = vex::slicer<2>{vex::extents[nrow()][ncol()]};
+	}
+
 	size_t ncol() const { return col_; }
 	size_t nrow() const { return row_; }
 	size_t size() const { return col_ * row_; }

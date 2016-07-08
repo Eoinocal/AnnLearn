@@ -39,6 +39,20 @@ int main()
 	auto y{ann::load_matrix<double>(std::ifstream{"blobs_y.xml"})};
 	auto y_hot{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
 
+	auto svm = ann::svm<double>{};
+
+	svm.fit(X, 3);
+
+	vex::vector<double> row = X.row(0);
+	vex::vector<double> output = svm.map(X.row(0));
+	vex::vector<double> target = y_hot.row(0);
+
+	ann::print(row);
+	ann::print(output);
+	ann::print(target);
+
+	std::cout << svm.loss(output, 2) << std::endl;
+
 #elif 0
 
 	ann::matrix<double> x_train;
