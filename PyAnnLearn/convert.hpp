@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "stdafx.hpp"
+#include "py_pch.hpp"
 #include <annlearn/vex_matrix.hpp>
 
 #include <numpy/ndarraytypes.h>

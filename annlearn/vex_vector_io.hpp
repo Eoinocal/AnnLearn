@@ -37,3 +37,25 @@ inline void serialize(Archive & ar, vex::vector<T>& v, const unsigned int file_v
 
 }}
 
+
+namespace annlearn
+{
+	
+template<typename T>
+vex::vector<T> load_vector(std::istream& is)
+{
+	vex::vector<T> v;
+	boost::archive::xml_iarchive ia(is);
+	ia >> make_nvp("v", v);
+
+	return v;
+}
+
+template<typename T>
+void save_vector(std::ostream& os, const vex::vector<T>& v)
+{
+	boost::archive::xml_oarchive oa(os);
+	oa << make_nvp("v", v);
+}
+
+}

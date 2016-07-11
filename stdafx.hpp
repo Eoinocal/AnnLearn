@@ -28,7 +28,7 @@
 #include <boost/numeric/ublas/vector_proxy.hpp>
 
 #pragma warning (push)
-//#define VEXCL_SHOW_KERNELS
+#define VEXCL_SHOW_KERNELS
 #pragma warning (disable : 4996)
 #include <vexcl/vexcl.hpp>
 #include <vexcl/reductor.hpp>

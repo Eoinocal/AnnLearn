@@ -132,4 +132,11 @@ matrix<T> load_matrix(std::istream& is)
 	return m;
 }
 
+template<typename T>
+void save_matrix(std::ostream& os, const matrix<T>& m)
+{
+	boost::archive::xml_oarchive oa(os);
+	oa << make_nvp("m", m);
+}
+
 }

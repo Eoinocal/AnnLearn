@@ -1,7 +1,7 @@
 
 #include "stdafx.hpp"
 
-#define BOOST_TEST_MODULE Prod
+#define BOOST_TEST_MODULE Matrix
 #include <boost/test/unit_test.hpp>
 
 #include <annlearn/print.hpp>

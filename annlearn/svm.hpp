@@ -7,6 +7,10 @@
 namespace annlearn
 {
 
+VEX_FUNCTION(double, threshold, (double, x),
+	return x > 0.0 ? 1.0 : 0.0;
+);
+
 template<typename T>
 class svm
 {
@@ -52,12 +56,17 @@ public:
 	
 	T loss(const vex::vector<T>& input, size_t class_idx)
 	{
-		vex::Reductor<T, vex::SUM> sum{vex::current_context()};
-
-		T s = input[class_idx];
-
-		return sum(max(input - s, 0.0) + delta_);
+		return loss(input, input[class_idx]);
 	}
+
+	template<typename Expr>
+	T loss(Expr input, T s_j)
+	{
+		vex::Reductor<T, vex::SUM> sum{vex::current_context()};
+		return sum(threshold(input - s_j + delta_)) - 1.0;
+	}
+
+	//T loss_dx(const vex::vector<T>& input, size_t class_idx)
 
 
 private:

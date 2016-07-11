@@ -66,7 +66,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BOOST_PYTHON_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>py_pch.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BOOST_PYTHON_STATIC_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>stdafx.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>py_pch.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,7 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="py_annlearn.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="py_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
@@ -102,7 +102,7 @@
     <ClInclude Include="classifier\backprop_net.hpp" />
     <ClInclude Include="classifier\base.hpp" />
     <ClInclude Include="convert.hpp" />
-    <ClInclude Include="stdafx.hpp" />
+    <ClInclude Include="py_pch.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

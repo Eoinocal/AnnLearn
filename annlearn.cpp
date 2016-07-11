@@ -24,7 +24,7 @@ double l2_norm(const Expr& v)
 
 int main()
 {
-	vex::Context ctx(vex::Filter::CPU && vex::Filter::Position{0});
+	vex::Context ctx(vex::Filter::GPU && vex::Filter::Position{1});
 	vex::profiler<> prof(ctx);
 
 	using vex::_;
@@ -34,7 +34,7 @@ int main()
 
 	vex::Random<double, vex::random::threefry> rnd;
 
-#if 1
+#if 0
 	auto X{ann::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
 	auto y{ann::load_matrix<double>(std::ifstream{"blobs_y.xml"})};
 	auto y_hot{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
@@ -53,48 +53,71 @@ int main()
 
 	std::cout << svm.loss(output, 2) << std::endl;
 
-#elif 0
+#elif 1
 
-	ann::matrix<double> x_train;
-	ann::matrix<double> y_train;
+	auto X{ann::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
+	auto y{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
 
-	{	std::ifstream ifs("iris.txt");
-		boost::archive::xml_iarchive ia(ifs);
-		ia >> ann::make_nvp("x_train", x_train);
-		ia >> ann::make_nvp("y_train", y_train);
-	}
-
-	std::cout << "Inputs" << std::endl;
-
-//	ann::print(x_train);
-	ann::print(y_train);
-
-	ann::backprop_net<double> net{ctx, {x_train.ncol(), 200, y_train.ncol()}};
+	ann::backprop_net<double> net{ctx,{X.ncol(), 10, y.ncol()}};
 	net.random_initialise();
 
-	std::cout << "Pre training prediction error: " << l2_norm(net.predict(x_train).data - y_train.data) << std::endl;
+	auto& layer = net.get_layer(0);
+
+	ann::backprop_net<double>::save(std::ofstream{"hyper_tan_backprop_net.xml"}, net);
+
+	layer.activate(X.row(0));
+
+	ann::print(layer.activation);
+
+	ann::save_vector(std::ofstream{"hyper_tan_layer_target.xml"}, layer.activation);
+
+	vex::vector<double> out = net.forward_pass(X.row(0));
+
+	ann::save_vector(std::ofstream{"hyper_tan_net_target.xml"}, out);
+
+#elif 0
+
+	auto X{ann::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
+	auto y_hot{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
+	
+//	std::cout << "Inputs" << std::endl;
+//	ann::print(X);
+//	ann::print(y_hot);
+
+	prof.tic_cl("Initialise");
+
+	ann::backprop_net<double> net{ctx, {X.ncol(), 200, y_hot.ncol()}};
+	net.random_initialise();	
+
+	prof.toc("Initialise");
+
+//	std::cout << "Pre training prediction error: " << l2_norm(net.predict(x_train).data - y_train.data) << std::endl;
 
 //	ann::print(net.predict(x_train));
 //	std::cout << "Error: " << l2_norm(net.predict(x_train).data - y_train.data) << std::endl;
 
-	net.fit(x_train, y_train, 0.1, 2000);
+	prof.tic_cl("Train");
 
-	vex::vector<double> predictions = vex::round(net.predict(x_train).data);
+	net.fit(X, y_hot, 0.1, 200);
+
+	prof.toc("Train");
+
+//	vex::vector<double> predictions = vex::round(net.predict(x_train).data);
 //	ann::print(predictions);
-	std::cout << "Post training prediction error: " << l2_norm(predictions - y_train.data) << std::endl;
+//	std::cout << "Post training prediction error: " << l2_norm(predictions - y_train.data) << std::endl;
 
 //	std::cout << "Error: " << l2_norm(predictions.data - y_train.data) << std::endl;
 
 #elif 0
-	size_t in = 1 << 10;
-	size_t out = 1 << 12;
+	size_t in = 1 << 13;
+	size_t out = 1 << 13;
 
-	ann::backprop_net<float> net(ctx, std::vector<size_t>{in, 1 << 14, out});
+	ann::backprop_net<double> net(ctx, std::vector<size_t>{in, 1 << 12, out});
 
 
-	vex::vector<float> input(ctx, in);
+	vex::vector<double> input(ctx, in);
 	input = 2 * rnd(vex::element_index(), std::rand()) - 1;
-	vex::vector<float> target(ctx, out);
+	vex::vector<double> target(ctx, out);
 	target = 2 * rnd(vex::element_index(), std::rand()) - 1;
 
 	prof.tic_cl("fwd warmup");

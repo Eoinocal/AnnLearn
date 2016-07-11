@@ -111,11 +111,31 @@ public:
 		return output;
 	}
 
+	layer<T>& get_layer(size_t i)
+	{
+		return layers_[i];
+	}
+
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
 		ar & make_nvp("layers", layers_);
+	}
+	
+	static backprop_net<T> load(std::istream& is)
+	{
+		backprop_net<T> bp_net;
+		boost::archive::xml_iarchive ia(is);
+		ia >> make_nvp("bp_net", bp_net);
+
+		return bp_net;
+	}
+
+	static void save(std::ostream& os, const backprop_net<T>& bp_net)
+	{
+		boost::archive::xml_oarchive oa(os);
+		oa << make_nvp("bp_net", bp_net);
 	}
 
 private:

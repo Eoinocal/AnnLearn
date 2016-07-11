@@ -53,6 +53,19 @@ VEX_FUNCTION(float, summed_delta, (size_t, n)(size_t, j)(double*, d)(double*, w)
 	return sum;
 );
 
+auto sig = [](auto x)
+	{
+		return tanh(x);
+	};
+
+
+VEX_CONSTANT(one, 1);
+
+auto sig_dx = [](auto x)
+	{
+		return vex::tag<2>(x) * (one() - vex::tag<2>(x));
+	};
+
 template<typename T>
 class layer
 {
@@ -104,7 +117,7 @@ public:
 		activation_stale_ = false;
 
 		auto net = vec_mat_prod(input, weights) + bias_weights;
-		activation = max_fn(net);
+		activation = sigmoid(net);
 	}
 
 	template<typename TT>
@@ -112,7 +125,10 @@ public:
 	{
 		assert(!activation_stale_);
 
-		return deltas = (activation - target) * max_dx(activation);
+		auto a = vex::tag<1>(activation);
+		auto t = vex::tag<2>(target);
+
+		return deltas = (a - t) * sigmoid_dx(a);
 	}
 
 	const auto& compute_deltas(layer<T>& above)
@@ -120,7 +136,7 @@ public:
 		assert(!activation_stale_);
 
 		return deltas = summed_delta(above.deltas.size(), vex::element_index(), vex::raw_pointer(above.deltas), vex::raw_pointer(above.weights))
-			* max_dx(activation);
+			* sigmoid_dx(activation);
 	}
 	
 	void update_weights(T eta, const vex::vector<T>& input)
