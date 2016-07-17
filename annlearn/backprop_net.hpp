@@ -49,9 +49,9 @@ public:
 		layers_.front().activate(in);
 
 		for (size_t i = 1; i < layers_.size(); ++i)
-			layers_[i].activate(layers_[0].activation);
+			layers_[i].activate(layers_[0].activation());
 
-		return layers_.back().activation;
+		return layers_.back().activation();
 	}
 
 	template<typename EI, typename ET>
@@ -65,7 +65,7 @@ public:
 		layers_.front().update_weights(eta, in);
 
 		for (size_t i = 1; i < layers_.size(); ++i)
-			layers_[i].update_weights(eta, layers_[i-1].activation);
+			layers_[i].update_weights(eta, layers_[i-1].activation());
 	}
 
 	size_t num_layers() const { return layers_.size(); }

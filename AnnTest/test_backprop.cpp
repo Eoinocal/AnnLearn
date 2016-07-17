@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(layer_forward)
 
 	BOOST_CHECK_SMALL(
 		sum(fabs(
-			net.get_layer(0).activation - target
+			net.get_layer(0).activation() - target
 		)
 		), 1e-6);
 }
