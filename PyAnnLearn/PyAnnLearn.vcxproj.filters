@@ -21,6 +21,9 @@
     <ClInclude Include="py_pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="classifier\svm.hpp">
+      <Filter>Header Files\classifier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

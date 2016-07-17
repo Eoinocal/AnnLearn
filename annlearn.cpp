@@ -55,6 +55,11 @@ int main()
 
 	print(svm.weights());
 
+	auto result = svm.predict(X);
+
+	print(y);
+	print(result);
+
 /*	size_t idx = 10;
 
 	size_t correct = classes[idx];
@@ -93,7 +98,7 @@ int main()
 	ann::print(output);
 	std::cout << svm.loss(output, correct) << std::endl << std::endl;
 */
-	std::vector<size_t> tests{0, 10, 12, 23, 34, 05, 36};
+/*	std::vector<size_t> tests{0, 10, 12, 23, 34, 05, 36};
 
 	for (auto idx : tests)
 	{
@@ -118,7 +123,7 @@ int main()
 		ann::print(target);
 
 		std::cout << svm.loss(output, correct) << std::endl;*/
-	}
+//	}
 
 #elif 0
 

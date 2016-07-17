@@ -6,8 +6,8 @@
 namespace annlearn
 {
 
-#define ACTIVATION_FN leaky_squared
-#define ACTIVATION_FN_DX leaky_squared_dx
+#define ACTIVATION_FN leaky_relu
+#define ACTIVATION_FN_DX leaky_relu_dx
 
 VEX_FUNCTION(float, sigmoid, (double, x),
 	return 1 / (1 + exp(-x));

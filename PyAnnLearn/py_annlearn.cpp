@@ -6,6 +6,7 @@
 #include "convert.hpp"
 #include "classifier/base.hpp"
 #include "classifier/backprop_net.hpp"
+#include "classifier/svm.hpp"
 
 namespace ann = annlearn;
 
@@ -113,4 +114,9 @@ BOOST_PYTHON_MODULE(MODULE_NAME)
 		.def("fit", &ann::py_backprop_net::fit)
 		.def("print_profile", &ann::py_backprop_net::print_profile)
 		.def("predict", &ann::py_backprop_net::predict);
+
+	py::class_<ann::py_svm>("svm")
+		.def("fit", &ann::py_svm::fit)
+		.def("print_profile", &ann::py_svm::print_profile)
+		.def("predict", &ann::py_svm::predict);
 }

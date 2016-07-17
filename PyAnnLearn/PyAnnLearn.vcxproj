@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="classifier\backprop_net.hpp" />
     <ClInclude Include="classifier\base.hpp" />
+    <ClInclude Include="classifier\svm.hpp" />
     <ClInclude Include="convert.hpp" />
     <ClInclude Include="py_pch.hpp" />
   </ItemGroup>

@@ -28,7 +28,7 @@ public:
 		rho_{0.01}
 	{}
 
-	void fit(const matrix<T>& x_train, const std::vector<size_t>& y_train, size_t classes)
+	void fit(const matrix<T>& x_train, const std::vector<size_t>& y_train, size_t classes, int epochs = 100)
 	{
 		weights_.resize(x_train.ncol(), classes);
 		bias_weights_.resize(classes);
@@ -37,8 +37,6 @@ public:
 
 		std::vector<size_t> indices(x_train.nrow());
 		std::iota(indices.begin(), indices.end(), 0);
-
-		int epochs = 1000;
 
 		boost::progress_display show_progress(epochs);
 
@@ -94,6 +92,31 @@ public:
 		weights_.data -= get_grad_by_input(weights_.ncol(), vex::element_index(), vex::raw_pointer(grad), vex::raw_pointer(input)) * rho_;
 		bias_weights_ -= get_grad(weights_.ncol(), vex::element_index(), vex::raw_pointer(grad)) * rho_;
 	} 
+
+	size_t classify(const vex::vector<T> input)
+	{
+		auto mapped{map(input)};
+		return std::distance(std::begin(mapped), std::max_element(std::begin(mapped), std::end(mapped)));
+	}
+
+	template<typename T>
+	matrix<T> predict(const matrix<T>& input)
+	{
+		std::vector<T> output(input.nrow());
+
+		std::vector<size_t> indices(input.nrow());
+		std::iota(indices.begin(), indices.end(), 0);
+
+		boost::progress_display show_progress(static_cast<unsigned long>(indices.size()));
+
+		for (size_t j : indices)
+		{
+			output[j] = static_cast<double>(classify(input.row(j)));
+			++show_progress;
+		}
+
+		return matrix<T>{1, input.nrow(), output};
+	}
 
 	const matrix<T>& weights() const{return weights_; }
 	
