@@ -24,7 +24,7 @@ class svm
 {
 public:
 	svm() :
-		delta_{1.0},
+		delta_{1.1},
 		rho_{0.01}
 	{}
 

@@ -6,8 +6,8 @@
 namespace annlearn
 {
 
-#define ACTIVATION_FN leaky_relu
-#define ACTIVATION_FN_DX leaky_relu_dx
+#define ACTIVATION_FN hypertan
+#define ACTIVATION_FN_DX hypertan_dx
 
 VEX_FUNCTION(float, sigmoid, (double, x),
 	return 1 / (1 + exp(-x));
@@ -114,7 +114,7 @@ public:
 
 	void random_initialise()
 	{
-		T scale = 0.001f;
+		T scale = 1.001f;
 
 		vex::RandomNormal<T, vex::random::threefry> rnd;
 		weights = rnd(vex::element_index(), std::rand()) * scale;
