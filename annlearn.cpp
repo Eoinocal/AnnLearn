@@ -2,7 +2,7 @@
 #include "stdafx.hpp"
 
 #include "annlearn/neuron.hpp"
-#include "annlearn/layer.hpp"
+#include "annlearn/fc_layer.hpp"
 #include "annlearn/backprop_net.hpp"
 #include "annlearn/svm.hpp"
 #include "annlearn/vex_matrix.hpp"
@@ -34,7 +34,7 @@ int main()
 
 	vex::Random<double, vex::random::threefry> rnd;
 
-#if 1
+#if 0
 	auto X{ann::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
 	auto y{ann::load_matrix<double>(std::ifstream{"blobs_y.xml"})};
 	auto y_hot{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
@@ -125,7 +125,7 @@ int main()
 		std::cout << svm.loss(output, correct) << std::endl;*/
 //	}
 
-#elif 0
+#elif 1
 
 	auto X{ann::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
 	auto y{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
@@ -133,23 +133,41 @@ int main()
 	ann::backprop_net<double> net{ctx,{X.ncol(), 10, y.ncol()}};
 	net.random_initialise();
 
-	auto& layer = net.get_layer(0);
+	auto& layer1 = net.get_layer(0);
 
-	ann::backprop_net<double>::save(std::ofstream{"hyper_tan_backprop_net.xml"}, net);
+	ann::backprop_net<double, ann::fc_layer<double>>::save(std::ofstream{"hyper_tan_backprop_net.xml"}, net);
 
-	layer.activate(X.row(0));
+	net.forward_pass(X.row(0));
 
-	ann::print(layer.activation_);
+	ann::print(layer1.activation());
+	ann::save_vector(std::ofstream{"hyper_tan_layer1_target.xml"}, layer1.activation());
 
-	ann::save_vector(std::ofstream{"hyper_tan_layer_target.xml"}, layer.activation_);
+	auto& layer2 = net.get_layer(1);
+
+	ann::save_vector(std::ofstream{"hyper_tan_layer2_target.xml"}, layer2.activation());
 
 	vex::vector<double> r = y.row(0);
 
-	layer.compute_deltas(r);
+	auto& deltas2 = layer2.compute_deltas(r);
 
-	layer.compute_deltas(r, annlearn::activation::sigmoid);
+	ann::print(deltas2);
+	ann::save_vector(std::ofstream{"hyper_tan_deltas2_target.xml"}, deltas2);
 
-//	vex::vector<double> out = net.forward_pass(X.row(0));
+	auto& deltas1 = layer1.compute_deltas(layer2);
+
+	ann::print(deltas1);
+	ann::save_vector(std::ofstream{"hyper_tan_deltas1_target.xml"}, deltas1);
+
+
+	net.forward_pass(X.row(0));
+	net.backward_pass(1.0, X.row(0), y.row(0));
+
+	ann::print(layer2.weights);
+	ann::save_vector(std::ofstream{"hyper_tan_weights2_target.xml"}, layer2.weights);
+
+	ann::print(layer1.weights);
+	ann::save_vector(std::ofstream{"hyper_tan_weights1_target.xml"}, layer1.weights);
+
 
 //	ann::save_vector(std::ofstream{"hyper_tan_net_target.xml"}, out);
 

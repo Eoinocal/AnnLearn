@@ -47,5 +47,8 @@
     <ClInclude Include="annlearn\svm.hpp">
       <Filter>Header Files\annlearn</Filter>
     </ClInclude>
+    <ClInclude Include="annlearn\fc_layer.hpp">
+      <Filter>Header Files\annlearn</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

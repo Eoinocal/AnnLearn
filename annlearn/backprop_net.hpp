@@ -1,13 +1,13 @@
 
 #pragma once
 
+#include "fc_layer.hpp"
 #include "layer.hpp"
-
 
 namespace annlearn
 {
 
-template<typename T>
+template<typename T, typename Layer=fc_layer<T>>
 class backprop_net
 {
 public:
@@ -111,7 +111,7 @@ public:
 		return output;
 	}
 
-	layer<T>& get_layer(size_t i)
+	Layer& get_layer(size_t i)
 	{
 		return layers_[i];
 	}
@@ -139,7 +139,7 @@ public:
 	}
 
 private:
-	std::vector<layer<T>> layers_;
+	std::vector<Layer> layers_;
 }; 
 
 }

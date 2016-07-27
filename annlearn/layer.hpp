@@ -2,97 +2,10 @@
 #pragma once
 
 #include "prod.hpp"
+#include "fc_layer.hpp"
 
 namespace annlearn
 {
-
-#define ACTIVATION_FN hypertan
-#define ACTIVATION_FN_DX hypertan_dx
-
-VEX_FUNCTION(float, sigmoid, (double, x),
-	return 1 / (1 + exp(-x));
-);
-
-VEX_FUNCTION(float, sigmoid_dx, (double, x),
-	return x * (1 - x);
-);
-
-VEX_FUNCTION(float, hypertan, (double, x),
-	return tanh(x);
-);
-
-VEX_FUNCTION(float, hypertan_dx, (double, x),
-	return (1 - x) * (1 + x);
-);
-
-VEX_FUNCTION(float, leaky_relu, (double, x),
-	return x > 0.0 ? x : 0.01*x;
-);
-
-VEX_FUNCTION(float, leaky_relu_dx, (double, x),
-	return x > 0.0 ? 1.0 : 0.01;
-);
-
-VEX_FUNCTION(float, leaky_squared, (double, x),
-	return x > 0.0 ? x*x : -0.01*x*x;
-);
-
-VEX_FUNCTION(float, leaky_squared_dx, (double, x),
-	return x > 0.0 ? 2.0*sqrt(x) : 0.01;
-);
-
-VEX_FUNCTION(float, leaky_sqrt, (double, x),
-	return x > 0.0 ? sqrt(x) : 0.01;
-);
-
-VEX_FUNCTION(float, leaky_sqrt_dx, (double, x),
-	return x > 0.0 ? 1.0 *x / (2.0) : 0.01*x;
-);
-
-VEX_FUNCTION(float, periodic, (double, x),
-	return x > sin(x);
-);
-
-VEX_FUNCTION(float, periodic_dx, (double, x),
-	return x > cos(x);
-);
-
-
-VEX_FUNCTION(float, get_delta_x_activation, (size_t, n)(size_t, j)(double*, d)(double*, a),
-	return d[j % n] * a[j / n];
-);
-
-VEX_FUNCTION(float, get_delta, (size_t, n)(size_t, j)(double*, d),
-	return d[j % n];
-);
-
-VEX_FUNCTION(float, get_activation, (size_t, n)(size_t, j)(double*, a),
-	return a[j / n];
-);
-
-VEX_FUNCTION(float, summed_delta, (size_t, n)(size_t, j)(double*, d)(double*, w),
-
-	float sum = 0.0;
-
-	for (size_t i = 0; i < n; ++i)
-		sum += d[i] * w[j*n + i];
-
-	return sum;
-);
-
-
-VEX_CONSTANT(one, 1.0);
-
-auto sig = [](auto x)
-{
-	return one() / (one() + exp(-x));
-};
-
-auto sig_dx = [](auto x)
-{
-	return x * (one() - x);
-};
-
 
 template<typename T>
 class layer
@@ -142,10 +55,10 @@ public:
 
 	void activate(const vex::vector<T>& input)
 	{
-		activation_stale_ = false;
-
 		auto net = vec_mat_prod(input, weights) + bias_weights;
 		activation_ = ACTIVATION_FN(net);
+
+		activation_stale_ = false;
 	}
 
 	template<typename TT>
@@ -158,7 +71,7 @@ public:
 		return deltas = (activation_ - target) * ACTIVATION_FN_DX(activation_);
 	}
 
-	const auto& compute_deltas(layer<T>& above)
+	const auto& compute_deltas(const layer<T>& above)
 	{
 		assert(!activation_stale_);
 
@@ -170,6 +83,8 @@ public:
 	
 	void update_weights(T eta, const vex::vector<T>& input)
 	{
+		activation_stale_ = true;
+
 		T lambda = 0.0f;
 
 		weights -= weights*lambda + eta
@@ -178,8 +93,6 @@ public:
 //			  get_delta(deltas.size(), vex::element_index(), vex::raw_pointer(deltas));
 
 		bias_weights -= bias_weights*lambda + eta * get_delta(deltas.size(), vex::element_index(), vex::raw_pointer(deltas));
-
-		activation_stale_ = true;
 	}
 
 	size_t layer_size() const { return activation_.size(); }

@@ -13,5 +13,8 @@ int main(int argc, char* argv[])
 	if (!ctx) throw std::runtime_error("No devices available.");
 	std::cout << ctx << std::endl;
 
-	return ::boost::unit_test::unit_test_main(&init_unit_test_suite, argc, argv);
+	auto ret = ::boost::unit_test::unit_test_main(&init_unit_test_suite, argc, argv);
+
+	system("pause");
+	return ret;
 }
