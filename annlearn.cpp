@@ -39,7 +39,7 @@ int main()
 	auto y{ann::load_matrix<double>(std::ifstream{"blobs_y.xml"})};
 	auto y_hot{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
 
-//	print(y);
+	//	print(y);
 
 	vex::vector<double> tmp1 = y.column(0);
 	std::vector<double> tmp2(tmp1.size());
@@ -60,51 +60,11 @@ int main()
 	print(y);
 	print(result);
 
-/*	size_t idx = 10;
+	/*	size_t idx = 10;
 
-	size_t correct = classes[idx];
-	vex::vector<double> row = X.row(idx);
-	vex::vector<double> output = svm.map(X.row(idx));
-	vex::vector<double> target = y_hot.row(idx);
-
-	ann::print(row);
-	ann::print(output);
-	ann::print(target);
-
-	std::cout << correct << " -> " << svm.loss(output, correct) << std::endl << std::endl;
-
-	svm.update(row, correct);
-
-	output = svm.map(row);
-
-	ann::print(row);
-	ann::print(output);
-	ann::print(target);
-
-	std::cout << svm.loss(output, correct) << std::endl << std::endl;
-
-	svm.update(row, correct);
-	output = svm.map(row);
-	ann::print(output);
-	std::cout << svm.loss(output, correct) << std::endl << std::endl;
-
-	svm.update(row, correct);
-	output = svm.map(row);
-	ann::print(output);
-	std::cout << svm.loss(output, correct) << std::endl << std::endl;
-
-	svm.update(row, correct);
-	output = svm.map(row);
-	ann::print(output);
-	std::cout << svm.loss(output, correct) << std::endl << std::endl;
-*/
-/*	std::vector<size_t> tests{0, 10, 12, 23, 34, 05, 36};
-
-	for (auto idx : tests)
-	{
 		size_t correct = classes[idx];
 		vex::vector<double> row = X.row(idx);
-		vex::vector<double> output = svm.map(row);
+		vex::vector<double> output = svm.map(X.row(idx));
 		vex::vector<double> target = y_hot.row(idx);
 
 		ann::print(row);
@@ -113,19 +73,139 @@ int main()
 
 		std::cout << correct << " -> " << svm.loss(output, correct) << std::endl << std::endl;
 
-/*		svm.update(output, correct);
+		svm.update(row, correct);
 
-		row = X.row(0);
-		output = svm.map(X.row(0));
+		output = svm.map(row);
 
 		ann::print(row);
 		ann::print(output);
 		ann::print(target);
 
-		std::cout << svm.loss(output, correct) << std::endl;*/
-//	}
+		std::cout << svm.loss(output, correct) << std::endl << std::endl;
+
+		svm.update(row, correct);
+		output = svm.map(row);
+		ann::print(output);
+		std::cout << svm.loss(output, correct) << std::endl << std::endl;
+
+		svm.update(row, correct);
+		output = svm.map(row);
+		ann::print(output);
+		std::cout << svm.loss(output, correct) << std::endl << std::endl;
+
+		svm.update(row, correct);
+		output = svm.map(row);
+		ann::print(output);
+		std::cout << svm.loss(output, correct) << std::endl << std::endl;
+	*/
+	/*	std::vector<size_t> tests{0, 10, 12, 23, 34, 05, 36};
+
+		for (auto idx : tests)
+		{
+			size_t correct = classes[idx];
+			vex::vector<double> row = X.row(idx);
+			vex::vector<double> output = svm.map(row);
+			vex::vector<double> target = y_hot.row(idx);
+
+			ann::print(row);
+			ann::print(output);
+			ann::print(target);
+
+			std::cout << correct << " -> " << svm.loss(output, correct) << std::endl << std::endl;
+
+	/*		svm.update(output, correct);
+
+			row = X.row(0);
+			output = svm.map(X.row(0));
+
+			ann::print(row);
+			ann::print(output);
+			ann::print(target);
+
+			std::cout << svm.loss(output, correct) << std::endl;*/
+			//	}
 
 #elif 1
+
+	vex::Reductor<double, vex::SUM> sum(vex::current_context());
+	vex::vector<double> in{std::vector<double>{1.0, 0.2, 0.8, 0.0}};
+	vex::vector<double> out{std::vector<double>{0.5, 0.8}};
+
+	auto layer = ann::fc_layer<double>{ctx, 2, 4};
+	layer.random_initialise();
+
+	ann::print(layer.activate(in));
+	ann::print(out);
+
+	std::cout << "\nError: " << sum(fabs(layer.activate(in) - out)) << std::endl;
+
+	for (int i = 0; i < 1; ++i)
+	{
+		layer.activate(in);
+		layer.compute_deltas(out);
+		layer.update_weights(0.1, in);
+	}
+
+	ann::print(layer.activate(in));
+
+	std::cout << "\nError: " << sum(fabs(layer.activate(in) - out)) << std::endl;
+
+
+
+#elif 0
+
+	vex::Reductor<double, vex::SUM> sum(vex::current_context());
+	//	auto net = annlearn::backprop_net<double, annlearn::fc_layer<double>>::load(std::ifstream{"hyper_tan_backprop_net.xml"});
+	auto X{annlearn::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
+	auto y{annlearn::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
+
+	vex::vector<double> v{std::vector<double>{1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0}};
+
+	ann::backprop_net<double> net{ctx,{X.ncol(), 10, y.ncol()}};
+	net.random_initialise();
+
+	auto& layer = net.get_layer(0);
+
+	ann::print(layer.activate(X.row(4)));
+	ann::print(v);
+
+	std::cout << "\nError: " << sum(fabs(layer.activate(X.row(4)) - v)) << std::endl;
+
+	for (int i = 0; i < 1; ++i)
+	{
+		layer.activate(X.row(4));
+		layer.compute_deltas(v);
+		layer.update_weights(0.001, X.row(4));
+	}
+
+	ann::print(layer.activate(X.row(4)));
+
+	std::cout << "\nError: " << sum(fabs(layer.activate(X.row(4)) - v)) << std::endl;
+
+#elif 0
+//	auto net = annlearn::backprop_net<double, annlearn::fc_layer<double>>::load(std::ifstream{"hyper_tan_backprop_net.xml"});
+auto X{annlearn::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
+auto y{annlearn::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};
+
+vex::vector<double> v{std::vector<double>{1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0}};
+
+ann::backprop_net<double> net{ctx,{X.ncol(), 50, y.ncol()}};
+net.random_initialise();
+
+auto& layer = net.get_layer(0);
+
+ann::print(net.forward_pass(X.row(4)));
+ann::print(vex::vector<double>(y.row(4)));
+
+for (int i = 0; i < 10000; ++i)
+{
+	net.forward_pass(X.row(4));
+	net.backward_pass(0.01, X.row(4), y.row(4));
+}
+
+ann::print(net.forward_pass(X.row(4)));
+
+#elif 0
 
 	auto X{ann::load_matrix<double>(std::ifstream{"blobs_X.xml"})};
 	auto y{ann::load_matrix<double>(std::ifstream{"blobs_y_hot.xml"})};

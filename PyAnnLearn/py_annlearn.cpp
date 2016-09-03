@@ -113,7 +113,8 @@ BOOST_PYTHON_MODULE(MODULE_NAME)
 		.def("reset", &ann::py_backprop_net::reset)
 		.def("fit", &ann::py_backprop_net::fit)
 		.def("print_profile", &ann::py_backprop_net::print_profile)
-		.def("predict", &ann::py_backprop_net::predict);
+		.def("predict", &ann::py_backprop_net::predict)
+		.def("get_weights", &ann::py_backprop_net::get_weights);
 
 	py::class_<ann::py_svm>("svm")
 		.def("fit", &ann::py_svm::fit)

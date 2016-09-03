@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="14">
+<v class_id="0" tracking_level="0" version="0">
+	<data>
+		<count>3</count>
+		<item_version>0</item_version>
+		<item>-1.55886264727360668e-02</item>
+		<item>-3.07494756566778493e-02</item>
+		<item>2.71721806210209138e-01</item>
+	</data>
+</v>
+</boost_serialization>
+

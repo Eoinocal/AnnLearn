@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="14">
+<v class_id="0" tracking_level="0" version="0">
+	<data>
+		<count>10</count>
+		<item_version>0</item_version>
+		<item>9.92178265005350113e-03</item>
+		<item>2.97048598527908325e-01</item>
+		<item>0.00000000000000000e+00</item>
+		<item>-0.00000000000000000e+00</item>
+		<item>3.41984183194199431e-08</item>
+		<item>1.37121919542551041e-02</item>
+		<item>-7.79782425297526061e-08</item>
+		<item>-1.36546823341632262e-05</item>
+		<item>8.70783776044845581e-02</item>
+		<item>0.00000000000000000e+00</item>
+	</data>
+</v>
+</boost_serialization>
+

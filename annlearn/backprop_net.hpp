@@ -70,7 +70,7 @@ public:
 
 	size_t num_layers() const { return layers_.size(); }
 
-	void fit(const matrix<T>& x_train, const matrix<T>& y_train, T eta = 0.05f,  int epochs = 1000)
+	void fit(const matrix<T>& x_train, const matrix<T>& y_train, T eta = 0.05f, int epochs = 1000)
 	{
 		std::vector<size_t> indices(x_train.nrow());
 		std::iota(indices.begin(), indices.end(), 0);

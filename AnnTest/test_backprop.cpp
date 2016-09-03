@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(layer_weights)
 		sum(fabs(
 			net.get_layer(0).weights - target
 		)
-		), 1e-6);
+		), 1e-5);
 }
 
 BOOST_AUTO_TEST_CASE(net_weights)
@@ -123,5 +123,5 @@ BOOST_AUTO_TEST_CASE(net_weights)
 		sum(fabs(
 			net.get_layer(1).weights - target
 		)
-		), 1e-6);
+		), 1e-5);
 }

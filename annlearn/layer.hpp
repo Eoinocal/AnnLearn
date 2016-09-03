@@ -27,7 +27,7 @@ public:
 
 	void random_initialise()
 	{
-		T scale = 1.001f;
+		T scale = 0.01f;
 
 		vex::RandomNormal<T, vex::random::threefry> rnd;
 		weights = rnd(vex::element_index(), std::rand()) * scale;
@@ -53,12 +53,14 @@ public:
 		bias_weights.resize(slice[y][vex::_](v));
 	}
 
-	void activate(const vex::vector<T>& input)
+	const auto& activate(const vex::vector<T>& input)
 	{
 		auto net = vec_mat_prod(input, weights) + bias_weights;
 		activation_ = ACTIVATION_FN(net);
 
 		activation_stale_ = false;
+
+		return activation_;
 	}
 
 	template<typename TT>

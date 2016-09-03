@@ -49,6 +49,15 @@ public:
 		return to_ndarray(p);
 	}
 
+	np::ndarray get_weights(int layer)
+	{
+		auto& l = net_.get_layer(layer);
+		auto w = l.weights;
+		auto W = annlearn::matrix<double>(l.output_size(), l.input_size(), w);
+
+		return to_ndarray(W);
+	}
+
 	void print_profile()
 	{
 		std::cout << prof_ << std::endl;
